@@ -1,0 +1,676 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<style>*,::before,::after{box-sizing:border-box}body{margin:0;font-family:system-ui,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<title>ตั้งราคา BLISSTECH</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bai+Jamjuree:wght@500;600;700&family=IBM+Plex+Sans+Thai:wght@400;500;600&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a pricing desk — inputs rail on the left, three platform "receipts" on the right; stacks on phones */
+:root{
+  --bg:#f3f4f6; --panel:#ffffff; --ink:#151a23; --muted:#5d6676; --line:#dde1e8; --soft:#eceff4;
+  --accent:#d9480f; --accent-ink:#ffffff; --accent-soft:#fdebe2;
+  --good:#1f7a4d; --good-soft:#e2f3ea; --warn:#9a6700; --warn-soft:#fbf1d6; --bad:#c22f2f; --bad-soft:#fbe5e5;
+  --shopee:#ee4d2d; --tiktok:#151a23; --facebook:#1b5fd6;
+  --f-display:"Bai Jamjuree","IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans Thai",system-ui,sans-serif;
+  --f-num:"IBM Plex Mono",ui-monospace,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0f1217; --panel:#171b22; --ink:#e8ebf0; --muted:#97a0ae; --line:#2a303a; --soft:#1f242d;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --accent-soft:#3a2216;
+  --good:#4cc488; --good-soft:#15301f; --warn:#e3b341; --warn-soft:#33290f; --bad:#ff6b6b; --bad-soft:#3a1818;
+  --shopee:#ff6a4a; --tiktok:#e8ebf0; --facebook:#5b93ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1217; --panel:#171b22; --ink:#e8ebf0; --muted:#97a0ae; --line:#2a303a; --soft:#1f242d;
+  --accent:#ff7a3d; --accent-ink:#1a0d05; --accent-soft:#3a2216;
+  --good:#4cc488; --good-soft:#15301f; --warn:#e3b341; --warn-soft:#33290f; --bad:#ff6b6b; --bad-soft:#3a1818;
+  --shopee:#ff6a4a; --tiktok:#e8ebf0; --facebook:#5b93ff; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 48px}
+header.top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px 24px;margin-bottom:18px}
+.brand h1{font-family:var(--f-display);font-weight:700;font-size:26px;margin:0;letter-spacing:.01em;text-wrap:balance}
+.brand p{margin:2px 0 0;color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:4px;background:var(--soft);padding:4px;border-radius:10px}
+.tabs button{border:0;background:transparent;color:var(--muted);font:600 14px var(--f-body);padding:8px 14px;border-radius:7px;cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--panel);color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.08)}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:10px 6px}.brand h1{font-size:22px}}
+.status{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--warn)}
+.dot.ok{background:var(--good)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:330px minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.calc{grid-template-columns:minmax(0,1fr)}}
+.rail{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:14px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px)}
+@media (max-width:900px){.rail{position:static}}
+label.f{display:grid;gap:5px;font-size:12px;font-weight:600;color:var(--muted);letter-spacing:.02em}
+input,select{font:500 15px var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:9px 11px;width:100%;min-width:0}
+input.num{font-family:var(--f-num);text-align:right}
+.big input.num{font-size:22px;padding:10px 12px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.picker{position:relative}
+.plist{position:absolute;left:0;right:0;top:100%;margin-top:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;max-height:320px;overflow:auto;z-index:5;box-shadow:0 10px 30px rgba(0,0,0,.15)}
+.plist button{display:flex;justify-content:space-between;gap:10px;width:100%;text-align:left;border:0;background:transparent;color:var(--ink);padding:9px 12px;font:500 14px var(--f-body);cursor:pointer}
+.plist button:hover,.plist button.hi{background:var(--soft)}
+.plist .c{font-family:var(--f-num);color:var(--muted);font-size:13px;white-space:nowrap}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--bg);color:var(--ink);border-radius:999px;padding:4px 10px;font:500 12px var(--f-body);cursor:pointer}
+.chip b{font-family:var(--f-num);font-weight:600}
+.chip:hover{border-color:var(--accent)}
+.hint{font-size:12px;color:var(--muted);margin:0}
+.btn{border:1px solid var(--line);background:var(--panel);color:var(--ink);font:600 13px var(--f-body);padding:8px 12px;border-radius:8px;cursor:pointer}
+.btn.pri{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.btn.danger{color:var(--bad)}
+.btn:disabled{opacity:.5;cursor:default}
+.costsave{display:flex;gap:8px;align-items:center;background:var(--accent-soft);border-radius:8px;padding:8px 10px;font-size:12px}
+.costsave span{flex:1}
+
+.plats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:1100px){.plats{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.card .hd{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.card .hd h3{margin:0;font:700 16px var(--f-display);display:flex;align-items:center;gap:8px}
+.card .hd h3 i{width:10px;height:10px;border-radius:3px;display:inline-block}
+.pill{font:600 12px var(--f-num);padding:3px 9px;border-radius:999px}
+.pill.good{background:var(--good-soft);color:var(--good)} .pill.warn{background:var(--warn-soft);color:var(--warn)} .pill.bad{background:var(--bad-soft);color:var(--bad)}
+.sum{padding:14px 16px 6px;display:grid;gap:2px}
+.sum .lbl{font-size:12px;color:var(--muted);letter-spacing:.02em}
+.sum .val{font:600 30px var(--f-num);font-variant-numeric:tabular-nums;line-height:1.15}
+.val.good{color:var(--good)} .val.bad{color:var(--bad)} .val.warn{color:var(--warn)}
+.target{margin:8px 16px 4px;padding:9px 12px;border-radius:8px;background:var(--soft);font-size:13px;display:flex;justify-content:space-between;gap:10px;align-items:baseline}
+.target b{font:600 16px var(--f-num)}
+.lines{list-style:none;margin:8px 0 0;padding:0 16px 14px;font-size:13px}
+.lines li{display:grid;grid-template-columns:18px minmax(0,1fr) auto;gap:8px;align-items:center;padding:5px 0;border-bottom:1px dashed var(--line)}
+.lines li:last-child{border-bottom:0}
+.lines li.off{color:var(--muted);text-decoration:line-through}
+.lines li .r{font-family:var(--f-num);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.lines li .r small{color:var(--muted);font-size:11px;margin-right:6px}
+.lines input[type=checkbox]{width:15px;height:15px;margin:0;accent-color:var(--accent)}
+.lines li.tot{border-top:1px solid var(--ink);border-bottom:0;font-weight:600;margin-top:4px;padding-top:8px}
+.ppbox{padding:12px 16px 4px;display:grid;gap:6px}
+.pprow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px}
+.pprow input{font-size:20px;padding:9px 12px}
+.ppsave{width:100%}
+.adrow{display:grid;grid-template-columns:minmax(0,1fr) 96px;gap:8px;align-items:center;font-size:12px;font-weight:600;color:var(--muted)}
+.adrow small{font-weight:500}
+.adrow input{padding:7px 10px}
+.adrow input.own{border-color:var(--accent);background:var(--accent-soft)}
+.brk summary{cursor:pointer;padding:8px 16px 12px;font-size:13px;color:var(--muted);font-weight:600}
+.brk[open] summary{padding-bottom:0}
+.empty{background:var(--panel);border:1px dashed var(--line);border-radius:12px;padding:40px 20px;text-align:center;color:var(--muted)}
+.note{margin-top:14px;font-size:12px;color:var(--muted)}
+
+/* products */
+.toolbar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-bottom:12px}
+.toolbar input{max-width:320px}
+.searchbar{position:sticky;top:calc(env(safe-area-inset-top,0px) + 0px);z-index:4;background:var(--bg);padding-block:8px;display:flex;gap:8px;align-items:center}
+.searchbar input{font-size:16px;padding:12px 14px;border-radius:10px;background:var(--panel)}
+.filters{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.filters .chip{white-space:nowrap;padding:6px 12px;font-size:13px}
+.filters .chip[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.plcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:10px}
+@media (max-width:640px){.plcards{grid-template-columns:minmax(0,1fr)}}
+.pc{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 14px;display:grid;gap:8px;cursor:pointer;text-align:left;color:var(--ink);font:inherit;width:100%}
+.pc:hover{border-color:var(--accent)}
+.pc .t{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.pc .t strong{font:600 15px var(--f-body);min-width:0;overflow-wrap:anywhere}
+.pc .t span{font:600 15px var(--f-num);white-space:nowrap}
+.pc .t span small{font:500 11px var(--f-body);color:var(--muted);margin-right:4px}
+.mm{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.mm div{border-radius:8px;padding:6px 8px;background:var(--soft);display:grid;gap:0}
+.mm div b{font:600 14px var(--f-num)} .mm div em{font-style:normal;font-size:11px;color:var(--muted)}
+.mm div.good b{color:var(--good)} .mm div.warn b{color:var(--warn)} .mm div.bad b{color:var(--bad)} .mm div.na b{color:var(--muted)}
+.pc .ed{justify-self:end;font-size:12px;color:var(--accent);font-weight:600;background:none;border:0;padding:2px 0;cursor:pointer}
+.fab{position:fixed;right:16px;bottom:calc(18px + env(safe-area-inset-bottom,0px));z-index:10;background:var(--accent);color:var(--accent-ink);border:0;border-radius:999px;padding:14px 20px;font:700 15px var(--f-body);box-shadow:0 8px 24px rgba(0,0,0,.25);cursor:pointer}
+.sheetbg{position:fixed;inset:0;background:rgba(10,12,16,.45);z-index:30;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--panel);width:100%;max-width:520px;border-radius:16px 16px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom,0px));display:grid;gap:12px;max-height:92vh;overflow:auto}
+@media (min-width:700px){.sheetbg{align-items:center}.sheet{border-radius:16px}}
+.sheet h2{margin:0;font:700 19px var(--f-display)}
+.sheet .grab{width:40px;height:4px;border-radius:2px;background:var(--line);justify-self:center;margin-top:-6px}
+.sheet .row3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.sheet .acts{display:flex;gap:8px;flex-wrap:wrap}
+.sheet .acts .btn{flex:1;padding:12px;font-size:15px}
+.sheet input{font-size:16px}
+.preview{background:var(--soft);border-radius:10px;padding:10px 12px;font-size:13px;display:grid;gap:6px}
+.wrap.hasfab{padding-bottom:96px}
+
+/* fees */
+.fees{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media (max-width:1000px){.fees{grid-template-columns:minmax(0,1fr)}}
+.fee{display:grid;grid-template-columns:20px minmax(0,1fr) 90px 54px 28px;gap:8px;align-items:center;padding:6px 16px}
+.fee input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent)}
+.fee select{padding:7px 4px;font-size:13px}
+.fee .x{border:0;background:none;color:var(--muted);cursor:pointer;font-size:16px}
+.feefoot{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;border-top:1px solid var(--line);margin-top:auto}
+.toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14px;z-index:20}
+@media (prefers-reduced-motion:no-preference){.card,.tabs button{transition:background .15s}}
+.statusrow{display:flex;align-items:center;gap:10px}
+.lock{border:1px solid var(--line);background:none;color:var(--muted);font:600 12px var(--f-body);padding:3px 10px;border-radius:999px;cursor:pointer}
+.pinbg{position:fixed;inset:0;background:var(--bg);z-index:50;display:grid;place-items:center;padding:16px}
+.pinbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 20px;width:100%;max-width:340px;display:grid;gap:12px;text-align:center}
+.pinbox h2{margin:0;font:700 20px var(--f-display)}
+.pinbox input{font:600 24px var(--f-num);text-align:center;letter-spacing:.3em;padding:12px}
+.pinbox .btn{padding:12px;font-size:15px}
+.pinerr{margin:0;color:var(--bad);font-size:13px}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand">
+      <h1>ตั้งราคา BLISSTECH</h1>
+      <p>คิดกำไรต่อชิ้นของ Shopee · TikTok · Facebook จากต้นทุนจริง</p>
+    </div>
+    <div class="statusrow"><div class="status" id="status"><span class="dot"></span><span>กำลังเชื่อมต่อข้อมูล…</span></div><button class="lock" id="lockbtn" hidden>ล็อก</button></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" id="tab-prod" aria-selected="false" data-v="prod">ค้นหาสินค้า</button>
+      <button role="tab" id="tab-calc" aria-selected="true" data-v="calc">คำนวณราคา</button>
+      <button role="tab" id="tab-fee" aria-selected="false" data-v="fee">ค่าธรรมเนียม</button>
+    </nav>
+  </header>
+
+  <!-- CALCULATOR -->
+  <section id="v-calc">
+    <div class="calc">
+      <aside class="rail">
+        <label class="f">สินค้า
+          <div class="picker">
+            <input id="psearch" placeholder="พิมพ์ค้นหา เช่น D5, MINI CC, M2" autocomplete="off">
+            <div class="plist" id="plist" hidden></div>
+          </div>
+        </label>
+        <div class="row2">
+          <label class="f">ต้นทุน/ชิ้น (฿)<input id="cost" class="num" type="number" step="0.01" inputmode="decimal"></label>
+          <label class="f">ค่ากล่อง (฿)<input id="box" class="num" type="number" step="0.01" inputmode="decimal"></label>
+        </div>
+        <div class="costsave" id="costsave" hidden><span>ต้นทุนเปลี่ยนจากที่บันทึกไว้</span><button class="btn pri" id="savecost">บันทึกต้นทุน</button></div>
+        <label class="f">ของแถม / ต้นทุนเพิ่ม (฿)<input id="gift" class="num" type="number" step="0.01" value="0" inputmode="decimal"></label>
+        <label class="f">ราคาเดียวกันทุกแพลต (฿)<input id="price" class="num" type="number" step="1" inputmode="decimal" placeholder="ไม่บังคับ"></label>
+        <div class="chips" id="refchips"></div>
+        <label class="f">เป้ากำไรสุทธิ (%)<input id="target" class="num" type="number" step="1" value="20" inputmode="decimal"></label>
+        <p class="hint">ตั้งราคาแยกแต่ละแพลตได้ในการ์ดด้านขวา (บนมือถืออยู่ด้านล่าง) ปุ่ม "ตามเป้า" ใส่ราคาขั้นต่ำที่ได้กำไรตามเป้าให้ การ์ดแต่ละแพลตฟอร์มจะบอกราคาขั้นต่ำที่ต้องตั้งเพื่อให้ได้กำไรตามเป้านี้ ติ๊กปิดค่าธรรมเนียมในการ์ดเพื่อลองสถานการณ์ได้ (ไม่บันทึกถาวร)</p>
+      </aside>
+      <div>
+        <div class="plats" id="plats"></div>
+        <p class="note">สูตรเดียวกับชีต "ตั้งราคาขาย Mall": กำไร = ราคาขาย − ต้นทุน − ค่ากล่อง − ของแถม − ค่าธรรมเนียม (% คิดจากราคาขาย) · VAT คิด 7% ของราคาขายเหมือนในชีต</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRODUCTS -->
+  <section id="v-prod" hidden>
+    <div class="searchbar"><input id="qsearch" type="search" placeholder="ค้นหาสินค้า เช่น D5, MINI, M2" autocomplete="off" enterkeyhint="search"></div>
+    <div class="filters" id="filters">
+      <button class="chip" data-f="all" aria-pressed="true">ทั้งหมด</button>
+      <button class="chip" data-f="loss" aria-pressed="false">ขาดทุน/กำไรต่ำ</button>
+      <button class="chip" data-f="noref" aria-pressed="false">ยังไม่มีราคาขาย</button>
+      <button class="chip" data-f="new" aria-pressed="false">เพิ่มใหม่</button>
+    </div>
+    <p class="hint" id="pcount" style="margin:0 0 8px"></p>
+    <div class="plcards" id="plcards"></div>
+    <button class="fab" id="addbtn" hidden>+ เพิ่มสินค้าใหม่</button>
+  </section>
+  <div class="sheetbg" id="sheetbg" hidden>
+    <form class="sheet" id="sheet" novalidate>
+      <div class="grab"></div>
+      <h2 id="sh-title">เพิ่มสินค้าใหม่</h2>
+      <label class="f">ชื่อสินค้า<input id="sh-name" placeholder="เช่น M2 Pro (LPT02)" required></label>
+      <div class="row2">
+        <label class="f">ต้นทุน/ชิ้น (฿)<input id="sh-cost" class="num" type="number" step="0.01" inputmode="decimal" placeholder="0"></label>
+        <label class="f">ค่ากล่อง (฿)<input id="sh-box" class="num" type="number" step="0.01" inputmode="decimal" value="5"></label>
+      </div>
+      <p class="hint" style="margin:0">ราคาขายที่ตั้ง (ไม่บังคับ ใส่เพื่อดูกำไรในหน้าค้นหา)</p>
+      <div class="row3">
+        <label class="f">Shopee<input id="sh-sp" class="num" type="number" step="1" inputmode="decimal"></label>
+        <label class="f">TikTok<input id="sh-tt" class="num" type="number" step="1" inputmode="decimal"></label>
+        <label class="f">Facebook<input id="sh-fb" class="num" type="number" step="1" inputmode="decimal"></label>
+      </div>
+      <p class="hint" style="margin:0">ค่าแอดเฉพาะสินค้านี้ (%) เว้นว่าง = ใช้ค่ากลางจากหน้าค่าธรรมเนียม</p>
+      <div class="row3">
+        <label class="f">แอด Shopee<input id="sh-asp" class="num" type="number" step="0.5" inputmode="decimal"></label>
+        <label class="f">แอด TikTok<input id="sh-att" class="num" type="number" step="0.5" inputmode="decimal"></label>
+        <label class="f">แอด Facebook<input id="sh-afb" class="num" type="number" step="0.5" inputmode="decimal"></label>
+      </div>
+      <div class="preview" id="sh-prev"></div>
+      <div class="acts">
+        <button type="button" class="btn" id="sh-cancel">ยกเลิก</button>
+        <button type="submit" class="btn pri" id="sh-save">บันทึก</button>
+      </div>
+      <div class="acts" id="sh-delrow"><button type="button" class="btn danger" id="sh-del">ลบสินค้านี้</button></div>
+    </form>
+  </div>
+
+  <!-- FEES -->
+  <section id="v-fee" hidden>
+    <p class="hint" style="margin:0 0 12px">ค่าธรรมเนียมตั้งไว้ที่เดียว ใช้กับทุกสินค้า แก้แล้วกด "บันทึก" ค่าตั้งต้นมาจากแท็บ "แบบฟอร์ม SP&amp;TT&amp;FB"</p>
+    <div class="fees" id="fees"></div>
+  </section>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<div class="pinbg" id="pinbg" hidden>
+  <form class="pinbox" id="pinform" novalidate>
+    <h2>ตั้งราคา BLISSTECH</h2>
+    <p class="hint">ใส่ PIN เพื่อดูข้อมูลต้นทุน</p>
+    <input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="PIN">
+    <p class="pinerr" id="pinerr" hidden></p>
+    <button class="btn pri" id="pinok" type="submit">เข้าใช้งาน</button>
+  </form>
+</div>
+<script>
+/* Data layer: Google Sheet + Apps Script (ดู apps-script/README.md)
+   API เดียวกับ db ของ Claude: collection().onSnapshot/add, doc().onSnapshot/set/update/delete
+   onSnapshot = โหลดทั้งหมดทุก 30 วิ + โหลดใหม่หลังเขียน · PIN ส่งไปกับทุก request ให้ Apps Script ตรวจ */
+const API_URL="";   // ← URL ".../exec" ของ Apps Script Web App
+if(!window.claude){(function(){
+  const PIN_KEY="bt-pin",POLL_MS=30000;
+  let pin=null;try{pin=localStorage.getItem(PIN_KEY)}catch(e){}
+  let state={products:{},config:{}},last="";const subs=new Set();
+  const snapDoc=(id,d)=>({id,exists:!!d,data:()=>d,metadata:{fromCache:false,hasPendingWrites:false}});
+  const emit=()=>subs.forEach(f=>f());
+  const status=(ok,t)=>window.setStatus&&setStatus(ok,t);
+  const fail=code=>Object.assign(new Error(code),{code});
+
+  async function call(action,body={}){
+    if(!API_URL)throw fail("no_api");
+    let r;try{r=await fetch(API_URL,{method:"POST",body:JSON.stringify({pin,action,...body})})}catch(e){throw fail("network")}
+    let j;try{j=await r.json()}catch(e){throw fail("network")}
+    if(!j.ok)throw fail(j.error||"server_error");
+    return j;
+  }
+  function apply(j){
+    const txt=JSON.stringify([j.products,j.config]);if(txt===last)return;last=txt;
+    const products={};(j.products||[]).forEach(({id,...rest})=>products[id]=rest);
+    state={products,config:j.config||{}};emit();
+  }
+  async function refresh(){
+    try{apply(await call("load"));status(true,"ข้อมูลซิงก์อัตโนมัติ")}
+    catch(e){if(e.code==="bad_pin")return askPin("PIN ไม่ถูกต้อง");status(false,e.code==="locked"?"ใส่ PIN ผิดหลายครั้ง ล็อก 15 นาที":"ซิงก์ไม่สำเร็จ จะลองใหม่อัตโนมัติ")}
+  }
+  async function write(action,body){
+    try{await call(action,body)}
+    catch(e){if(e.code==="bad_pin")askPin("PIN ไม่ถูกต้อง");refresh();throw e}
+    refresh();
+  }
+
+  /* PIN gate: ตรวจกับเซิร์ฟเวอร์ก่อนส่ง db ให้แอพ */
+  let unlock;const unlocked=new Promise(r=>unlock=r);
+  const msgs={bad_pin:"PIN ไม่ถูกต้อง",locked:"ใส่ PIN ผิดหลายครั้ง ลองใหม่ใน 15 นาที",no_pin_configured:"ยังไม่ได้ตั้ง PIN ใน Apps Script",no_api:"ยังไม่ได้ใส่ API_URL ใน index.html",network:"เชื่อมต่อไม่ได้ ตรวจอินเทอร์เน็ต"};
+  function askPin(msg,keep){
+    if(!keep){pin=null;try{localStorage.removeItem(PIN_KEY)}catch(e){}}
+    document.getElementById("pinerr").hidden=!msg;document.getElementById("pinerr").textContent=msg||"";
+    document.getElementById("pinbg").hidden=false;document.getElementById("pin").value="";
+    setTimeout(()=>document.getElementById("pin").focus(),50);
+  }
+  async function tryPin(p){
+    pin=p;
+    try{apply(await call("load"))}
+    catch(e){const keep=e.code==="network";askPin(msgs[e.code]||"เกิดข้อผิดพลาด ("+e.code+")",keep);if(keep)document.getElementById("pin").value=p;return false}
+    try{localStorage.setItem(PIN_KEY,p)}catch(e){}
+    document.getElementById("pinbg").hidden=true;unlock();return true;
+  }
+  document.getElementById("pinform").addEventListener("submit",async e=>{
+    e.preventDefault();const v=document.getElementById("pin").value.trim();if(!v)return;
+    const b=document.getElementById("pinok");b.disabled=true;await tryPin(v);b.disabled=false;
+  });
+  window.addEventListener("DOMContentLoaded",()=>{
+    const lk=document.getElementById("lockbtn");if(!lk)return;lk.hidden=false;
+    lk.onclick=()=>{state={products:{},config:{}};last="";emit();askPin("")};
+  });
+  if(pin)tryPin(pin);else window.addEventListener("DOMContentLoaded",()=>askPin(""));
+
+  setInterval(()=>{if(document.visibilityState==="visible"&&pin)refresh()},POLL_MS);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible"&&pin)refresh()});
+
+  const coll=name=>({
+    onSnapshot(next,onErr){const f=()=>next({docs:Object.entries(state[name]||{}).map(([id,d])=>snapDoc(id,d))});subs.add(f);f();return()=>subs.delete(f)},
+    async add(data){
+      if(name!=="products")throw fail("invalid_argument");
+      const id="n"+Date.now().toString(36)+Math.random().toString(36).slice(2,6);
+      state.products[id]=data;emit();await write("add",{id,data});return {id}},
+    doc:id=>doc(name+"/"+id)});
+  const doc=path=>{const [c,id]=path.split("/");return {
+    onSnapshot(next){const f=()=>next(snapDoc(id,(state[c]||{})[id]));subs.add(f);f();return()=>subs.delete(f)},
+    async set(d){if(c!=="config")throw fail("invalid_argument");state.config[id]=d;emit();await write("setConfig",{key:id,data:d})},
+    async update(d){const cur=(state[c]||{})[id];if(c!=="products"||!cur)throw fail("invalid_argument");
+      state.products[id]={...cur,...d};emit();await write("update",{id,patch:d})},
+    async delete(){if(c!=="products")throw fail("invalid_argument");delete state.products[id];emit();await write("delete",{id})}}};
+  const db={collection:coll,doc};
+  window.claude={use:async n=>n==="db"?(await unlocked,db):null};
+})()}
+</script>
+<script>
+const PLATS=[
+ {k:"shopee",name:"Shopee",color:"var(--shopee)"},
+ {k:"tiktok",name:"TikTok Shop",color:"var(--tiktok)"},
+ {k:"facebook",name:"Facebook",color:"var(--facebook)"}
+];
+const DEFAULT_FEES={
+ shopee:[
+  {id:"vat",label:"VAT 7%",type:"pct",v:7,on:true},
+  {id:"ccb",label:"CCB/FS",type:"pct",v:7.5,on:true},
+  {id:"sell",label:"ค่าธรรมเนียมการขาย",type:"pct",v:19.26,on:true},
+  {id:"pay",label:"ค่าธรรมเนียมการชำระเงิน",type:"pct",v:3.21,on:true},
+  {id:"flash",label:"Flash Sale",type:"pct",v:3.21,on:true},
+  {id:"aff",label:"Affiliate",type:"pct",v:15,on:true},
+  {id:"ads",label:"ADS (ACOS)",type:"pct",v:0,on:true}],
+ tiktok:[
+  {id:"vat",label:"VAT 7%",type:"pct",v:7,on:true},
+  {id:"grow",label:"ค่าธรรมเนียมเติบโตของร้าน",type:"pct",v:8.03,on:true},
+  {id:"cbd",label:"CBD/FS (เข้าแคมเปญ)",type:"pct",v:3.21,on:true},
+  {id:"mall",label:"ค่าคอมมิชชั่น Mall",type:"pct",v:13.91,on:true},
+  {id:"order",label:"ค่าธรรมเนียมคำสั่งซื้อ",type:"pct",v:3.21,on:true},
+  {id:"infra",label:"ค่าธรรมเนียมโครงสร้างพื้นฐาน",type:"baht",v:1.07,on:true},
+  {id:"coupon",label:"ค่าบริการคูปอง Extra",type:"pct",v:1,on:true},
+  {id:"live",label:"Live Special (โค้ดผ่านไลฟ์)",type:"pct",v:4.28,on:true},
+  {id:"aff",label:"Affiliate",type:"pct",v:5,on:true},
+  {id:"ads",label:"ADS (ACOS)",type:"pct",v:15,on:true}],
+ facebook:[
+  {id:"vat",label:"VAT 7%",type:"pct",v:7,on:true},
+  {id:"cod",label:"ค่า COD",type:"pct",v:4,on:true},
+  {id:"ship",label:"ค่าส่ง/ออเดอร์",type:"baht",v:15,on:true},
+  {id:"ads",label:"ค่าแอดออเดอร์แรก",type:"pct",v:25,on:true}]
+};
+const clone=o=>JSON.parse(JSON.stringify(o));
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>isFinite(n)?n.toLocaleString("th-TH",{minimumFractionDigits:0,maximumFractionDigits:d}):"–";
+const globalAds=k=>{const f=(fees[k]||[]).find(x=>x.id==="ads");return f?+f.v:0};
+function feesFor(k,ads){const items=fees[k]||[];if(ads===null||ads===undefined||!isFinite(ads))return items;
+  let found=false;const out=items.map(f=>{if(f.id==="ads"){found=true;return {...f,v:+ads,on:true,own:true}}return f});
+  if(!found)out.push({id:"ads",label:"ค่าแอด",type:"pct",v:+ads,on:true,own:true});return out}
+const prodAds=(p,k)=>{const v=p?.ads?.[k];return (v===null||v===undefined||v===""||!isFinite(+v))?null:+v};
+let adsCur={shopee:null,tiktok:null,facebook:null};
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+let db=null, products=[], fees=clone(DEFAULT_FEES), feesDraft=clone(DEFAULT_FEES);
+let sel=null;            // selected product id
+let scenario={};         // per-session toggles: plat -> {feeId:bool}
+let canWrite=true;
+
+function toast(t){const el=$("toast");el.textContent=t;el.hidden=false;clearTimeout(toast._t);toast._t=setTimeout(()=>el.hidden=true,2200)}
+function setStatus(ok,t){$("status").innerHTML=`<span class="dot ${ok?"ok":""}"></span><span>${esc(t)}</span>`}
+
+/* ---------- tabs ---------- */
+document.querySelectorAll(".tabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".tabs button").forEach(x=>x.setAttribute("aria-selected",x===b));
+  ["calc","prod","fee"].forEach(v=>$("v-"+v).hidden=v!==b.dataset.v);
+  try{localStorage.setItem("bt-tab",b.dataset.v)}catch(e){}
+  if(b.dataset.v==="fee"){feesDraft=clone(fees);renderFees()}
+  if(b.dataset.v==="prod")renderProducts();
+  $("addbtn").hidden=b.dataset.v!=="prod";document.querySelector(".wrap").classList.toggle("hasfab",b.dataset.v==="prod");
+});
+
+/* ---------- calc ---------- */
+function num(id){const v=parseFloat($(id).value);return isFinite(v)?v:0}
+function calcPlat(p,price,cost,box,gift){
+  const items=feesFor(p.k,adsCur[p.k]);const tog=scenario[p.k]||{};
+  let pct=0,fixed=0;const lines=[];
+  for(const f of items){const on=(f.id in tog)?tog[f.id]:f.on;
+    const amt=f.type==="pct"?price*f.v/100:f.v;
+    lines.push({...f,on,amt});
+    if(on){if(f.type==="pct")pct+=f.v/100;else fixed+=f.v}}
+  const fee=lines.filter(l=>l.on).reduce((a,l)=>a+l.amt,0);
+  const profit=price-cost-box-gift-fee;
+  const margin=price>0?profit/price:NaN;
+  const t=num("target")/100;const den=1-pct-t;
+  const minPrice=den>0?(cost+box+gift+fixed)/den:Infinity;
+  const be=(1-pct)>0?(cost+box+gift+fixed)/(1-pct):Infinity;
+  return {lines,fee,profit,margin,minPrice,be};
+}
+function tone(m){if(!isFinite(m))return"warn";if(m<0)return"bad";if(m<num("target")/100)return"warn";return"good"}
+let prices={shopee:0,tiktok:0,facebook:0};
+let built=false;
+function buildCards(){
+  $("plats").innerHTML=PLATS.map(pl=>`<article class="card" data-k="${pl.k}">
+    <div class="hd"><h3><i style="background:${pl.color}"></i>${pl.name}</h3><span class="pill" id="pill-${pl.k}">–</span></div>
+    <div class="ppbox">
+      <label class="f" for="pp-${pl.k}">ราคาขาย ${pl.name} (฿)</label>
+      <div class="pprow"><input id="pp-${pl.k}" data-pp="${pl.k}" class="num" type="number" step="1" inputmode="decimal" placeholder="0">
+      <button class="btn" data-ppmin="${pl.k}" title="ใส่ราคาขั้นต่ำตามเป้ากำไร">ตามเป้า</button></div>
+      <div class="adrow"><label for="ad-${pl.k}">ค่าแอด (% ของราคาขาย)<small id="adhint-${pl.k}"></small></label><input id="ad-${pl.k}" data-ad="${pl.k}" class="num" type="number" step="0.5" inputmode="decimal"></div>
+      <button class="btn pri ppsave" id="ppsave-${pl.k}" data-ppsave="${pl.k}" hidden>บันทึกราคา/ค่าแอดให้สินค้านี้</button>
+    </div>
+    <div id="body-${pl.k}"></div></article>`).join("");
+  built=true;
+}
+function renderCalc(){
+  const cost=num("cost"),box=num("box"),gift=num("gift");
+  const p=products.find(x=>x.id===sel);
+  $("costsave").hidden=!(p&&(cost!==+p.cost||box!==+(p.box??5)));
+  const any=PLATS.some(pl=>prices[pl.k]);
+  if(!$("cost").value&&!any){built=false;$("plats").innerHTML=`<div class="empty" style="grid-column:1/-1">เลือกสินค้าหรือใส่ต้นทุน แล้วใส่ราคาขาย ระบบจะคิดกำไรของทุกแพลตฟอร์มให้ทันที</div>`;return}
+  if(!built)buildCards();
+  for(const pl of PLATS){
+    const price=prices[pl.k]||0;
+    const inp=$("pp-"+pl.k);if(document.activeElement!==inp)inp.value=price||"";
+    const r=calcPlat(pl,price,cost,box,gift);const tn=tone(r.margin);
+    const pill=$("pill-"+pl.k);pill.className="pill "+tn;pill.textContent=isFinite(r.margin)?fmt(r.margin*100,1)+"%":"–";
+    const saved=+(p?.ref?.[pl.k]||0);
+    const g=globalAds(pl.k),ac=adsCur[pl.k],adInp=$("ad-"+pl.k);
+    if(document.activeElement!==adInp)adInp.value=ac??g;
+    $("adhint-"+pl.k).textContent=ac!==null&&ac!==g?` · ค่ากลาง ${fmt(g)}%`:" · ใช้ค่ากลาง";
+    adInp.classList.toggle("own",ac!==null&&ac!==g);
+    const adChanged=(ac??null)!==(prodAds(p,pl.k)??null)&&!(ac===g&&prodAds(p,pl.k)===null);
+    $("ppsave-"+pl.k).hidden=!(p&&((price>0&&price!==saved)||adChanged));
+    $("pp-"+pl.k).closest(".card").querySelector('[data-ppmin]').dataset.v=isFinite(r.minPrice)?Math.ceil(r.minPrice):"";
+    $("body-"+pl.k).innerHTML=`
+      <div class="sum"><span class="lbl">กำไรสุทธิ/ชิ้น${saved&&price!==saved?` <span style="color:var(--muted)">(ราคาที่บันทึกไว้ ฿${fmt(saved,0)})</span>`:""}</span><span class="val ${tn}">${price?(r.profit>=0?"":"−")+"฿"+fmt(Math.abs(r.profit)):"–"}</span></div>
+      <div class="target"><span>ราคาขั้นต่ำ กำไร ${fmt(num("target"),1)}%</span><b>${isFinite(r.minPrice)?"฿"+fmt(Math.ceil(r.minPrice),0):"ทำไม่ได้"}</b></div>
+      <div class="target"><span>ราคาเท่าทุน</span><b>${isFinite(r.be)?"฿"+fmt(Math.ceil(r.be),0):"–"}</b></div>
+      <details class="brk"><summary>ดูรายละเอียดค่าใช้จ่าย · รวม −฿${fmt(r.fee+cost+box+gift)}</summary>
+      <ul class="lines">
+        <li><span></span><span>ราคาขาย</span><span class="r">${fmt(price)}</span></li>
+        <li><span></span><span>ต้นทุนสินค้า</span><span class="r">−${fmt(cost)}</span></li>
+        <li><span></span><span>ค่ากล่อง</span><span class="r">−${fmt(box)}</span></li>
+        ${gift?`<li><span></span><span>ของแถม/ต้นทุนเพิ่ม</span><span class="r">−${fmt(gift)}</span></li>`:""}
+        ${r.lines.map(l=>`<li class="${l.on?"":"off"}"><input type="checkbox" data-p="${pl.k}" data-f="${esc(l.id)}" ${l.on?"checked":""} aria-label="${esc(l.label)}"><span>${esc(l.label)}</span><span class="r"><small>${l.type==="pct"?fmt(l.v)+"%":"฿"}</small>−${fmt(l.amt)}</span></li>`).join("")}
+        <li class="tot"><span></span><span>ค่าธรรมเนียมรวม</span><span class="r">−${fmt(r.fee)}</span></li>
+      </ul></details>`;
+    const d=$("body-"+pl.k).querySelector("details");if(openBrk[pl.k])d.open=true;
+    d.addEventListener("toggle",()=>openBrk[pl.k]=d.open);
+  }
+}
+const openBrk={};
+$("plats").addEventListener("change",e=>{const c=e.target;if(c.dataset.p){(scenario[c.dataset.p]=scenario[c.dataset.p]||{})[c.dataset.f]=c.checked;renderCalc()}});
+$("plats").addEventListener("input",e=>{const a=e.target.dataset.ad;if(a){const v=parseFloat(e.target.value);adsCur[a]=isFinite(v)?v:null;renderCalc();return}
+  const k=e.target.dataset.pp;if(k){prices[k]=parseFloat(e.target.value)||0;$("price").value="";renderCalc()}});
+$("plats").addEventListener("click",async e=>{
+  const m=e.target.closest("[data-ppmin]");if(m&&m.dataset.v){prices[m.dataset.ppmin]=+m.dataset.v;$("price").value="";renderCalc();return}
+  const s=e.target.closest("[data-ppsave]");if(s){const k=s.dataset.ppsave;const p=products.find(x=>x.id===sel);if(!p)return;
+    const ref={...(p.ref||{}),[k]:prices[k]||null};
+    const ac=adsCur[k];const ads={...(p.ads||{}),[k]:(ac===null||ac===globalAds(k))?null:ac};
+    if(await writeProduct(p.id,{ref,ads}))toast("บันทึก "+PLATS.find(x=>x.k===k).name+" ของ "+p.name+" แล้ว");}
+});
+$("price").addEventListener("input",()=>{const v=num("price");PLATS.forEach(pl=>prices[pl.k]=v);renderCalc()});
+["cost","box","gift","target"].forEach(id=>$(id).addEventListener("input",renderCalc));
+$("target").addEventListener("change",()=>renderProducts());
+
+/* product picker */
+function setRefPrices(p){const ref=p?.ref||{};const first=ref.shopee||ref.tiktok||ref.facebook||0;PLATS.forEach(pl=>prices[pl.k]=+(ref[pl.k]||first)||0);$("price").value=""}
+function choose(p){
+  sel=p.id;$("psearch").value=p.name;$("cost").value=p.cost;$("box").value=p.box??5;
+  scenario={};setRefPrices(p);PLATS.forEach(pl=>adsCur[pl.k]=prodAds(p,pl.k));
+  const ref=p.ref||{};const has=PLATS.some(pl=>ref[pl.k]);
+  $("refchips").innerHTML=has?`<button class="chip" data-r="1">ใช้ราคาเดิมแต่ละแพลต</button>`:"";
+  try{localStorage.setItem("bt-sel",p.id)}catch(e){}
+  $("plist").hidden=true;renderCalc();
+}
+$("refchips").onclick=e=>{if(e.target.closest(".chip")){setRefPrices(products.find(x=>x.id===sel));renderCalc()}};
+let hi=0;
+function showList(){
+  const q=$("psearch").value.trim().toLowerCase();
+  const list=products.filter(p=>!q||p.name.toLowerCase().includes(q)).slice(0,60);
+  hi=0;
+  $("plist").innerHTML=list.length?list.map((p,i)=>`<button data-id="${p.id}" class="${i===0?"hi":""}"><span>${esc(p.name)}</span><span class="c">฿${fmt(+p.cost)}</span></button>`).join(""):`<div style="padding:12px;color:var(--muted);font-size:13px">${products.length?"ไม่พบสินค้า":"ยังไม่มีสินค้า เพิ่มได้ที่แท็บ สินค้า & ต้นทุน"}</div>`;
+  $("plist").hidden=false;
+}
+$("psearch").addEventListener("focus",()=>{$("psearch").select();showList()});
+$("psearch").addEventListener("input",showList);
+$("psearch").addEventListener("keydown",e=>{
+  const bs=[...$("plist").querySelectorAll("button")];if(!bs.length)return;
+  if(e.key==="ArrowDown"||e.key==="ArrowUp"){e.preventDefault();bs[hi]?.classList.remove("hi");hi=(hi+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length;bs[hi].classList.add("hi");bs[hi].scrollIntoView({block:"nearest"})}
+  if(e.key==="Enter"){e.preventDefault();bs[hi]?.click()}
+  if(e.key==="Escape")$("plist").hidden=true;
+});
+$("plist").addEventListener("mousedown",e=>e.preventDefault());
+$("plist").addEventListener("click",e=>{const b=e.target.closest("button");if(b){const p=products.find(x=>x.id===b.dataset.id);if(p)choose(p)}});
+$("psearch").addEventListener("blur",()=>setTimeout(()=>$("plist").hidden=true,100));
+
+$("savecost").onclick=async()=>{
+  const p=products.find(x=>x.id===sel);if(!p)return;
+  if(await writeProduct(p.id,{cost:num("cost"),box:num("box")}))toast("บันทึกต้นทุน "+p.name+" แล้ว");
+};
+
+/* ---------- products: search + cards + add/edit sheet ---------- */
+let pfilter="all", editing=null, delArm=false;
+const REFK=[["shopee","Shopee"],["tiktok","TikTok"],["facebook","FB"]];
+function quick(platKey,price,cost,box,ads=null){
+  let fee=0;for(const f of feesFor(platKey,ads))if(f.on)fee+=f.type==="pct"?price*f.v/100:f.v;
+  const profit=price-cost-box-fee;return {profit,margin:price>0?profit/price:NaN};
+}
+function margins(p){return REFK.map(([k,l])=>{const pr=+(p.ref?.[k]||0);return pr?{k,l,pr,...quick(k,pr,+p.cost||0,+(p.box??5),prodAds(p,k))}:{k,l,pr:0}})}
+function renderProducts(){
+  const q=$("qsearch").value.trim().toLowerCase().replace(/\s+/g," ");
+  const t=num("target")/100;
+  let list=products.filter(p=>!q||p.name.toLowerCase().includes(q));
+  if(pfilter==="loss")list=list.filter(p=>margins(p).some(m=>m.pr&&m.margin<t));
+  if(pfilter==="noref")list=list.filter(p=>!margins(p).some(m=>m.pr));
+  if(pfilter==="new")list=list.filter(p=>!p.source);
+  $("pcount").textContent=q||pfilter!=="all"?`พบ ${list.length} จาก ${products.length} รายการ`:`สินค้าทั้งหมด ${products.length} รายการ · แตะที่สินค้าเพื่อคำนวณราคา`;
+  if(!list.length){$("plcards").innerHTML=`<div class="empty" style="grid-column:1/-1">${products.length?`ไม่พบสินค้าที่ตรงกับ "${esc(q)}"<br><button class="btn pri" style="margin-top:12px" id="addq">+ เพิ่ม "${esc($("qsearch").value.trim()||"สินค้าใหม่")}"</button>`:`ยังไม่มีสินค้า กด "+ เพิ่มสินค้าใหม่" เพื่อเริ่ม`}</div>`;
+    const a=$("addq");if(a)a.onclick=()=>openSheet(null,$("qsearch").value.trim());return}
+  $("plcards").innerHTML=list.map(p=>`<div class="pc" role="button" tabindex="0" data-id="${p.id}">
+    <div class="t"><strong>${esc(p.name)}</strong><span><small>ทุน</small>฿${fmt(+p.cost)}</span></div>
+    <div class="mm">${margins(p).map(m=>m.pr?`<div class="${tone(m.margin)}"><em>${m.l} ฿${fmt(m.pr,0)}${prodAds(p,m.k)!==null?` · แอด ${fmt(prodAds(p,m.k))}%`:""}</em><b>${fmt(m.margin*100,1)}%</b></div>`:`<div class="na"><em>${m.l}</em><b>–</b></div>`).join("")}</div>
+    <button class="ed" data-a="edit">แก้ไข</button></div>`).join("");
+}
+$("qsearch").addEventListener("input",renderProducts);
+$("filters").onclick=e=>{const b=e.target.closest(".chip");if(!b)return;pfilter=b.dataset.f;$("filters").querySelectorAll(".chip").forEach(x=>x.setAttribute("aria-pressed",x===b));renderProducts()};
+function openCalc(p){document.querySelector('.tabs [data-v="calc"]').click();choose(p);window.scrollTo({top:0})}
+$("plcards").addEventListener("click",e=>{
+  const card=e.target.closest(".pc");if(!card)return;const p=products.find(x=>x.id===card.dataset.id);if(!p)return;
+  if(e.target.closest('[data-a="edit"]'))openSheet(p);else openCalc(p);
+});
+$("plcards").addEventListener("keydown",e=>{if(e.key==="Enter"&&e.target.classList.contains("pc"))e.target.click()});
+$("addbtn").onclick=()=>openSheet(null);
+
+function openSheet(p,prefill=""){
+  editing=p;delArm=false;
+  $("sh-title").textContent=p?"แก้ไขสินค้า":"เพิ่มสินค้าใหม่";
+  $("sh-name").value=p?p.name:prefill;$("sh-cost").value=p?p.cost:"";$("sh-box").value=p?(p.box??5):5;
+  [["sh-asp","shopee"],["sh-att","tiktok"],["sh-afb","facebook"]].forEach(([id,k])=>{const v=prodAds(p,k);$(id).value=v??"";$(id).placeholder=fmt(globalAds(k))});
+  $("sh-sp").value=p?.ref?.shopee||"";$("sh-tt").value=p?.ref?.tiktok||"";$("sh-fb").value=p?.ref?.facebook||"";
+  $("sh-delrow").hidden=!p;$("sh-del").textContent="ลบสินค้านี้";
+  $("sheetbg").hidden=false;sheetPreview();
+  setTimeout(()=>(p?$("sh-cost"):$("sh-name")).focus(),50);
+}
+function closeSheet(){$("sheetbg").hidden=true;editing=null}
+const sv=id=>{const v=parseFloat($(id).value);return isFinite(v)?v:null};
+function sheetPreview(){
+  const cost=sv("sh-cost")??0,box=sv("sh-box")??5;
+  const rows=[["shopee","Shopee",sv("sh-sp"),sv("sh-asp")],["tiktok","TikTok",sv("sh-tt"),sv("sh-att")],["facebook","Facebook",sv("sh-fb"),sv("sh-afb")]];
+  const has=rows.some(r=>r[2]);
+  if(!sv("sh-cost")){$("sh-prev").innerHTML=`<span class="hint">ใส่ต้นทุนแล้วจะเห็นราคาขั้นต่ำที่ได้กำไร ${fmt(num("target"),1)}% ทันที</span>`;return}
+  $("sh-prev").innerHTML=rows.map(([k,l,pr,ad])=>{
+    const ff=feesFor(k,ad);const pct=ff.filter(f=>f.on&&f.type==="pct").reduce((a,f)=>a+f.v/100,0),fixed=ff.filter(f=>f.on&&f.type!=="pct").reduce((a,f)=>a+f.v,0);
+    const den=1-pct-num("target")/100;const minP=den>0?Math.ceil((cost+box+fixed)/den):null;
+    const r=pr?quick(k,pr,cost,box,ad):null;
+    return `<div style="display:flex;justify-content:space-between;gap:8px"><span>${l}</span><span>${r?`<b class="val ${tone(r.margin)}" style="font:600 13px var(--f-num)">${fmt(r.margin*100,1)}% (฿${fmt(r.profit,0)})</b> · `:""}<span style="color:var(--muted)">ขั้นต่ำ ฿${minP?fmt(minP,0):"–"}</span></span></div>`}).join("")+(has?"":"");
+}
+["sh-cost","sh-box","sh-sp","sh-tt","sh-fb","sh-asp","sh-att","sh-afb"].forEach(id=>$(id).addEventListener("input",sheetPreview));
+$("sh-cancel").onclick=closeSheet;
+$("sheetbg").addEventListener("click",e=>{if(e.target===$("sheetbg"))closeSheet()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("sheetbg").hidden)closeSheet()});
+$("sheet").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const name=$("sh-name").value.trim(),cost=sv("sh-cost"),box=sv("sh-box")??5;
+  if(!name){toast("ใส่ชื่อสินค้าก่อน");$("sh-name").focus();return}
+  if(cost===null){toast("ใส่ต้นทุนเป็นตัวเลข");$("sh-cost").focus();return}
+  if(!editing&&products.some(p=>p.name.trim().toLowerCase()===name.toLowerCase())){toast("มีสินค้าชื่อนี้อยู่แล้ว");return}
+  if(!db){toast("ยังเชื่อมต่อข้อมูลไม่ได้");return}
+  const ref={shopee:sv("sh-sp"),tiktok:sv("sh-tt"),facebook:sv("sh-fb")};
+  const ads={shopee:sv("sh-asp"),tiktok:sv("sh-att"),facebook:sv("sh-afb")};
+  $("sh-save").disabled=true;
+  try{
+    if(editing){await db.doc("products/"+editing.id).update({name,cost,box,ref,ads,updatedAt:new Date().toISOString()});toast("บันทึก "+name+" แล้ว");closeSheet()}
+    else{const order=products.reduce((m,p)=>Math.max(m,+p.order||0),0)+1;
+      const ref2=await db.collection("products").add({name,cost,box,ref,ads,order,createdAt:new Date().toISOString()});
+      closeSheet();toast("เพิ่ม "+name+" แล้ว");$("qsearch").value=name;renderProducts();}
+  }catch(err){toast(err.code==="invalid_argument"?"คุณไม่มีสิทธิ์แก้ข้อมูลนี้":"บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง")}
+  finally{$("sh-save").disabled=false}
+});
+$("sh-del").onclick=async()=>{
+  if(!editing)return;
+  if(!delArm){delArm=true;$("sh-del").textContent="แตะอีกครั้งเพื่อยืนยันการลบ";return}
+  try{await db.doc("products/"+editing.id).delete();toast("ลบ "+editing.name+" แล้ว");closeSheet()}catch(err){toast("ลบไม่สำเร็จ ลองใหม่อีกครั้ง")}
+};
+async function writeProduct(id,patch){
+  if(!db){toast("ยังเชื่อมต่อข้อมูลไม่ได้");return false}
+  try{await db.doc("products/"+id).update({...patch,updatedAt:new Date().toISOString()});return true}
+  catch(err){toast(err.code==="invalid_argument"?"คุณไม่มีสิทธิ์แก้ข้อมูลนี้":"บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง");return false}
+}
+
+/* ---------- fees ---------- */
+function renderFees(){
+  $("fees").innerHTML=PLATS.map(pl=>`<article class="card" data-p="${pl.k}">
+    <div class="hd"><h3><i style="background:${pl.color}"></i>${pl.name}</h3><span class="pill good">${fmt((feesDraft[pl.k]||[]).filter(f=>f.on&&f.type==="pct").reduce((a,f)=>a+f.v,0),2)}%</span></div>
+    <div style="padding:8px 0">${(feesDraft[pl.k]||[]).map((f,i)=>`<div class="fee" data-i="${i}">
+      <input type="checkbox" data-k="on" ${f.on?"checked":""} aria-label="ใช้ ${esc(f.label)}">
+      <input data-k="label" value="${esc(f.label)}" aria-label="ชื่อค่าธรรมเนียม">
+      <input data-k="v" class="num" type="number" step="0.01" value="${f.v}" aria-label="ค่า">
+      <select data-k="type" aria-label="หน่วย"><option value="pct" ${f.type==="pct"?"selected":""}>%</option><option value="baht" ${f.type==="baht"?"selected":""}>฿</option></select>
+      <button class="x" data-a="rm" aria-label="ลบรายการ">×</button></div>`).join("")}</div>
+    <div class="feefoot"><button class="btn" data-a="add">+ เพิ่มรายการ</button><button class="btn" data-a="reset">ค่าตั้งต้น</button></div>
+  </article>`).join("")+`<div style="grid-column:1/-1;display:flex;gap:10px;align-items:center"><button class="btn pri" id="savefees">บันทึกค่าธรรมเนียม</button><span class="hint">มีผลกับการคำนวณของทุกคนที่เปิดแอพนี้</span></div>`;
+  $("savefees").onclick=saveFees;
+}
+$("fees").addEventListener("input",e=>{
+  const row=e.target.closest(".fee");if(!row)return;const p=e.target.closest(".card").dataset.p;const f=feesDraft[p][+row.dataset.i];const k=e.target.dataset.k;
+  if(k==="on")f.on=e.target.checked;else if(k==="v")f.v=parseFloat(e.target.value)||0;else if(k==="type")f.type=e.target.value;else f.label=e.target.value;
+  if(k!=="label"){const pill=e.target.closest(".card").querySelector(".pill");pill.textContent=fmt(feesDraft[p].filter(x=>x.on&&x.type==="pct").reduce((a,x)=>a+x.v,0),2)+"%"}
+});
+$("fees").addEventListener("change",e=>{if(e.target.dataset.k==="type"||e.target.dataset.k==="on")$("fees").dispatchEvent(new Event("input"))});
+$("fees").addEventListener("click",e=>{
+  const b=e.target.closest("button[data-a]");if(!b)return;const p=b.closest(".card")?.dataset.p;if(!p)return;
+  if(b.dataset.a==="rm")feesDraft[p].splice(+b.closest(".fee").dataset.i,1);
+  if(b.dataset.a==="add")feesDraft[p].push({id:"c"+Date.now(),label:"ค่าใช้จ่ายใหม่",type:"pct",v:0,on:true});
+  if(b.dataset.a==="reset")feesDraft[p]=clone(DEFAULT_FEES[p]);
+  renderFees();
+});
+async function saveFees(){
+  if(!db){toast("ยังเชื่อมต่อข้อมูลไม่ได้");return}
+  try{await db.doc("config/fees").set({...clone(feesDraft),updatedAt:new Date().toISOString()});toast("บันทึกค่าธรรมเนียมแล้ว")}
+  catch(err){toast(err.code==="invalid_argument"?"คุณไม่มีสิทธิ์แก้ค่าธรรมเนียม":"บันทึกไม่สำเร็จ ลองใหม่อีกครั้ง")}
+}
+
+/* ---------- data ---------- */
+renderCalc();
+{let t="prod";try{t=localStorage.getItem("bt-tab")||"prod"}catch(e){}document.querySelector(`.tabs [data-v="${t}"]`)?.click()}
+(async()=>{
+  db=await window.claude?.use?.("db");
+  if(!db){setStatus(false,"ไม่ได้เชื่อมต่อฐานข้อมูล (ใช้ค่าตั้งต้น)");return}
+  setStatus(true,"ข้อมูลซิงก์อัตโนมัติ");
+  db.collection("products").onSnapshot(s=>{
+    products=s.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(+a.order||9999)-(+b.order||9999)||a.name.localeCompare(b.name,"th"));
+    if(!sel){let saved=null;try{saved=localStorage.getItem("bt-sel")}catch(e){}const p=products.find(x=>x.id===saved)||products.find(x=>x.ref&&(x.ref.shopee||x.ref.tiktok));if(p)choose(p)}
+    renderProducts();
+  },err=>setStatus(false,"โหลดสินค้าไม่สำเร็จ"));
+  db.doc("config/fees").onSnapshot(d=>{
+    if(d.exists){const x=d.data();fees={shopee:x.shopee||clone(DEFAULT_FEES.shopee),tiktok:x.tiktok||clone(DEFAULT_FEES.tiktok),facebook:x.facebook||clone(DEFAULT_FEES.facebook)}}
+    else fees=clone(DEFAULT_FEES);
+    renderCalc();
+    if(!$("v-fee").hidden&&!$("fees").contains(document.activeElement)){feesDraft=clone(fees);renderFees()}
+  });
+})();
+</script>
+
+</body>
+</html>
