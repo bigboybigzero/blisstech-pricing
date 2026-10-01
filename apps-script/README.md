@@ -9,6 +9,8 @@
 
 ## 2. ใส่ Apps Script
 1. ในชีต: Extensions → Apps Script
+   - ถ้าเปิดไม่ได้ (หน้า "ไม่สามารถเปิดไฟล์ได้" — เกิดเมื่อ Chrome ล็อกอิน Google หลายบัญชี)
+     ให้สร้างโปรเจกต์แยกที่ script.google.com แทน แล้วเพิ่ม Script Property `SHEET_ID` = ID ของชีต (ส่วนกลางของ URL ชีต)
 2. ลบโค้ดเดิม วางเนื้อหา `apps-script/Code.gs` ทั้งไฟล์ แล้วกด Save
 3. เลือกฟังก์ชัน `setup` → Run (ครั้งแรกจะขอสิทธิ์ ให้กดอนุญาต)
    - จะเปลี่ยนชื่อแท็บเป็น `products` และสร้างแท็บ `config`

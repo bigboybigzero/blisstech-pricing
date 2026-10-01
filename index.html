@@ -269,7 +269,7 @@ input.num{font-family:var(--f-num);text-align:right}
 /* Data layer: Google Sheet + Apps Script (ดู apps-script/README.md)
    API เดียวกับ db ของ Claude: collection().onSnapshot/add, doc().onSnapshot/set/update/delete
    onSnapshot = โหลดทั้งหมดทุก 30 วิ + โหลดใหม่หลังเขียน · PIN ส่งไปกับทุก request ให้ Apps Script ตรวจ */
-const API_URL="";   // ← URL ".../exec" ของ Apps Script Web App
+const API_URL="https://script.google.com/macros/s/AKfycbzuUnnJSuuEYYeFskyn-KdiD0LuG72k-oMwj_ipTf7vryn9obD_YQ8K0rbGgaLN7TmH/exec";   // ← URL ".../exec" ของ Apps Script Web App
 if(!window.claude){(function(){
   const PIN_KEY="bt-pin",POLL_MS=30000;
   let pin=null;try{pin=localStorage.getItem(PIN_KEY)}catch(e){}

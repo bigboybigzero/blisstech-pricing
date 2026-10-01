@@ -4,6 +4,7 @@
  * (Execute as: Me · Who has access: Anyone) ดูขั้นตอนใน apps-script/README.md
  *
  * PIN เก็บใน Project Settings > Script Properties ชื่อ PIN (ไม่อยู่ในโค้ด)
+ * ถ้าเป็นโปรเจกต์แยก (ไม่ได้เปิดจากเมนูของชีต) ให้เพิ่ม Script Property SHEET_ID = ID ของชีตข้อมูล
  * ทุก request เป็น POST body JSON: {pin, action, ...}
  *   load                      → {products:[...], config:{fees:{...}}}
  *   add    {id, data}         → เพิ่มสินค้า
@@ -24,6 +25,11 @@ const MAX_FAILS = 10;          // PIN ผิดเกินนี้ภายใ
 const FAIL_WINDOW_SEC = 15 * 60;
 
 /* ---------- entry points ---------- */
+
+function book() {
+  const id = PropertiesService.getScriptProperties().getProperty('SHEET_ID');
+  return id ? SpreadsheetApp.openById(id) : SpreadsheetApp.getActiveSpreadsheet();
+}
 
 function doGet() {
   return json({ ok: true, app: 'blisstech-pricing' });
@@ -52,7 +58,7 @@ function doPost(e) {
 
 /** รันครั้งเดียวจาก editor: สร้างแท็บ/หัวคอลัมน์ที่ขาด และตั้งคอลัมน์ข้อความเป็น plain text */
 function setup() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = book();
   let sh = ss.getSheetByName(PRODUCTS);
   if (!sh) {
     sh = ss.getSheets().length === 1 ? ss.getSheets()[0] : ss.insertSheet();
@@ -91,7 +97,7 @@ function checkPin(pin) {
 /* ---------- products ---------- */
 
 function productSheet() {
-  const sh = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(PRODUCTS);
+  const sh = book().getSheetByName(PRODUCTS);
   if (!sh) throw err('no_sheet', 'ไม่พบแท็บ products — รัน setup() ก่อน');
   return sh;
 }
@@ -183,7 +189,7 @@ function deleteProduct(id) {
 /* ---------- config ---------- */
 
 function configSheet() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  const ss = book();
   let cf = ss.getSheetByName(CONFIG);
   if (!cf) { cf = ss.insertSheet(CONFIG); cf.appendRow(['key', 'value']); }
   return cf;
