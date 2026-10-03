@@ -17,6 +17,10 @@
 4. ⚙️ Project Settings → Script Properties → Add property
    - Property: `PIN` · Value: PIN ที่ต้องการ (แนะนำ 6 หลักขึ้นไป)
 
+## 2.5 หน้าเว็บ
+1. ในโปรเจกต์ Apps Script กด ＋ ข้างคำว่า "ไฟล์" → HTML → ตั้งชื่อ `Index`
+2. วางเนื้อหา `index.html` ทั้งไฟล์ แล้วกด Save
+
 ## 3. Deploy เป็น Web app
 1. Deploy → New deployment → ⚙️ เลือก **Web app**
 2. Execute as: **Me** · Who has access: **Anyone**
