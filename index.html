@@ -170,6 +170,9 @@ input.num{font-family:var(--f-num);text-align:right}
 .pch{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center}
 .plist .pn{display:flex;align-items:center;gap:8px;min-width:0}
 .selimg{width:100%;max-height:200px;object-fit:contain;border-radius:10px;background:var(--soft);display:block}
+.selimgacts{display:flex}
+.selimgacts .btn{flex:1;text-align:center;padding:10px}
+.selimgacts .btn.busy{opacity:.6;pointer-events:none}
 .imgpick{display:grid;grid-template-columns:96px minmax(0,1fr);gap:12px;align-items:center}
 .imgpick .thumb{width:96px;height:96px;border-radius:10px}
 .imgacts{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
@@ -202,6 +205,10 @@ input.num{font-family:var(--f-num);text-align:right}
           </div>
         </label>
         <img class="selimg" id="selimg" alt="" hidden>
+        <div class="selimgacts" id="selimgacts" hidden>
+          <label class="btn" for="calc-file" id="calc-filelbl">เพิ่มรูปสินค้า</label>
+          <input class="vh" id="calc-file" type="file" accept="image/*">
+        </div>
         <div class="row2">
           <label class="f">ต้นทุน/ชิ้น (฿)<input id="cost" class="num" type="number" step="0.01" inputmode="decimal"></label>
           <label class="f">ค่ากล่อง (฿)<input id="box" class="num" type="number" step="0.01" inputmode="decimal"></label>
@@ -545,13 +552,25 @@ $("target").addEventListener("change",()=>renderProducts());
 
 /* product picker */
 function setRefPrices(p){const ref=p?.ref||{};const first=ref.shopee||ref.tiktok||ref.facebook||0;PLATS.forEach(pl=>prices[pl.k]=+(ref[pl.k]||first)||0);$("price").value=""}
+let calcUploading=false;
 function renderSelImg(){
-  const p=products.find(x=>x.id===sel),el=$("selimg"),a=imgAttrs(p,600);
+  const p=products.find(x=>x.id===sel),el=$("selimg"),a=imgAttrs(p,600),lbl=$("calc-filelbl");
+  $("selimgacts").hidden=!p;
+  lbl.textContent=calcUploading?"กำลังอัปโหลดรูป…":a?"เปลี่ยนรูป":"เพิ่มรูปสินค้า";lbl.classList.toggle("busy",calcUploading);
   if(!a){el.hidden=true;el.removeAttribute("src");return}
   const tmp=document.createElement("div");tmp.innerHTML=`<img ${a}>`;const t=tmp.firstChild;
   if(el.getAttribute("src")!==t.getAttribute("src")){el.onerror=t.onerror;el.dataset.alt=t.dataset.alt||"";el.src=t.getAttribute("src")}
   el.hidden=false;
 }
+$("calc-file").addEventListener("change",async e=>{
+  const f=e.target.files[0],id=sel;e.target.value="";if(!f||!id)return;
+  if(!db?.uploadImage){toast("ยังเชื่อมต่อข้อมูลไม่ได้");return}
+  let data;try{data=await shrinkImage(f)}catch(err){toast("เปิดไฟล์รูปนี้ไม่ได้ ลองใช้ไฟล์ JPG หรือ PNG");return}
+  calcUploading=true;renderSelImg();
+  try{await db.uploadImage(id,data);toast("บันทึกรูปแล้ว")}
+  catch(err){toast("อัปโหลดรูปไม่สำเร็จ ลองใหม่อีกครั้ง")}
+  finally{calcUploading=false;renderSelImg()}
+});
 function choose(p){
   sel=p.id;$("psearch").value=p.name;$("cost").value=p.cost;$("box").value=p.box??5;
   scenario={};setRefPrices(p);PLATS.forEach(pl=>adsCur[pl.k]=prodAds(p,pl.k));
