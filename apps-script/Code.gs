@@ -11,6 +11,11 @@
  *   update {id, patch}        → แก้เฉพาะฟิลด์ที่ส่งมา
  *   delete {id}
  *   setConfig {key, data}     → เขียน config (เช่น fees)
+ *   uploadImage {id, mime, data(base64)} → เก็บรูปใน Drive แล้วใส่ file id ในคอลัมน์ image
+ *   removeImage {id}
+ *
+ * รูปสินค้าอยู่ในโฟลเดอร์ Drive "BLISSTECH Pricing รูปสินค้า" (แชร์แบบมีลิงก์ดูได้ เพื่อให้แอปแสดงรูป)
+ * ID โฟลเดอร์เก็บใน Script Property IMAGE_FOLDER_ID (สร้างให้อัตโนมัติ)
  */
 
 const PRODUCTS = 'products';
@@ -18,11 +23,14 @@ const CONFIG = 'config';
 const HEADERS = ['id', 'name', 'cost', 'box',
   'price_shopee', 'price_tiktok', 'price_facebook',
   'ads_shopee', 'ads_tiktok', 'ads_facebook',
-  'order', 'source', 'createdAt', 'updatedAt'];
-const TEXT_COLS = ['id', 'name', 'source', 'createdAt', 'updatedAt'];
+  'order', 'source', 'createdAt', 'updatedAt', 'image'];
+const TEXT_COLS = ['id', 'name', 'source', 'createdAt', 'updatedAt', 'image'];
 const PLATS = ['shopee', 'tiktok', 'facebook'];
 const MAX_FAILS = 10;          // PIN ผิดเกินนี้ภายใน 15 นาที → ล็อกชั่วคราว
 const FAIL_WINDOW_SEC = 15 * 60;
+const IMAGE_FOLDER = 'BLISSTECH Pricing รูปสินค้า';
+const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+const MAX_IMAGE_B64 = 7 * 1024 * 1024;
 
 /* ---------- entry points ---------- */
 
@@ -49,6 +57,8 @@ function doPost(e) {
       case 'update': return withLock(() => { updateProduct(req.id, req.patch); return json({ ok: true }); });
       case 'delete': return withLock(() => { deleteProduct(req.id); return json({ ok: true }); });
       case 'setConfig': return withLock(() => { writeConfig(req.key, req.data); return json({ ok: true }); });
+      case 'uploadImage': return withLock(() => json({ ok: true, image: uploadImage(req.id, req.mime, req.data) }));
+      case 'removeImage': return withLock(() => { setImage(req.id, ''); return json({ ok: true }); });
       default: return json({ ok: false, error: 'bad_action' });
     }
   } catch (err) {
@@ -72,6 +82,7 @@ function setup() {
 
   let cf = ss.getSheetByName(CONFIG);
   if (!cf) { cf = ss.insertSheet(CONFIG); cf.appendRow(['key', 'value']); }
+  imageFolder();
 
   if (!PropertiesService.getScriptProperties().getProperty('PIN')) {
     Logger.log('ยังไม่ได้ตั้ง PIN: ไปที่ Project Settings > Script Properties แล้วเพิ่ม PIN');
@@ -125,7 +136,7 @@ function rowToProduct(head, r) {
     ref: {}, ads: {}, order: n('order')
   };
   PLATS.forEach(k => { p.ref[k] = n('price_' + k); p.ads[k] = n('ads_' + k); });
-  ['source', 'createdAt', 'updatedAt'].forEach(h => { if (s(h)) p[h] = s(h); });
+  ['source', 'createdAt', 'updatedAt', 'image'].forEach(h => { if (s(h)) p[h] = s(h); });
   return p;
 }
 
@@ -137,7 +148,7 @@ function flatten(patch) {
     if (k === 'ref' || k === 'ads') {
       const pre = k === 'ref' ? 'price_' : 'ads_';
       PLATS.forEach(pl => { if (val && pl in val) out[pre + pl] = val[pl]; });
-    } else if (HEADERS.indexOf(k) >= 0 && k !== 'id') {
+    } else if (HEADERS.indexOf(k) >= 0 && k !== 'id' && k !== 'image') {  // รูปเปลี่ยนผ่าน uploadImage/removeImage เท่านั้น
       out[k] = val;
     }
   });
@@ -183,7 +194,72 @@ function deleteProduct(id) {
   validId(id);
   const sh = productSheet(), head = headerOf(sh);
   const row = findRow(sh, head, id);
-  if (row > 0) sh.deleteRow(row);
+  if (row < 0) return;
+  const col = head.indexOf('image');
+  const old = col < 0 ? '' : String(sh.getRange(row, col + 1).getValue());
+  sh.deleteRow(row);
+  trashImage(old);
+}
+
+/* ---------- images ---------- */
+
+function imageFolder() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('IMAGE_FOLDER_ID');
+  if (id) {
+    try { const f = DriveApp.getFolderById(id); if (!f.isTrashed()) return f; } catch (e) { /* ถูกลบไปแล้ว สร้างใหม่ */ }
+  }
+  const f = DriveApp.createFolder(IMAGE_FOLDER);
+  props.setProperty('IMAGE_FOLDER_ID', f.getId());
+  return f;
+}
+
+function uploadImage(id, mime, data) {
+  validId(id);
+  if (IMAGE_TYPES.indexOf(mime) < 0) throw err('invalid_argument', 'bad image type');
+  if (typeof data !== 'string' || !data || data.length > MAX_IMAGE_B64) throw err('invalid_argument', 'bad image size');
+  const sh = productSheet(), head = ensureColumn(sh, 'image');
+  if (findRow(sh, head, id) < 0) throw err('invalid_argument', 'not found');
+  const name = id + '.' + mime.split('/')[1].replace('jpeg', 'jpg');
+  const file = imageFolder().createFile(Utilities.newBlob(Utilities.base64Decode(data), mime, name));
+  try {
+    file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  } catch (e) {
+    file.setTrashed(true);
+    throw err('sharing_blocked', 'บัญชีนี้แชร์ไฟล์แบบมีลิงก์ไม่ได้');
+  }
+  try { setImage(id, file.getId()); } catch (e) { file.setTrashed(true); throw e; }
+  return file.getId();
+}
+
+/** เปลี่ยนรูปของสินค้า ('' = ลบรูป) แล้วย้ายรูปเก่าไปถังขยะ Drive (กู้คืนได้ 30 วัน) */
+function setImage(id, fileId) {
+  validId(id);
+  const sh = productSheet(), head = ensureColumn(sh, 'image');
+  const row = findRow(sh, head, id);
+  if (row < 0) throw err('invalid_argument', 'not found');
+  const cell = sh.getRange(row, head.indexOf('image') + 1);
+  const old = String(cell.getValue());
+  cell.setValue(fileId);
+  const up = head.indexOf('updatedAt');
+  if (up >= 0) sh.getRange(row, up + 1).setValue(new Date().toISOString());
+  if (old && old !== fileId) trashImage(old);
+}
+
+function trashImage(fileId) {
+  if (!fileId) return;
+  try { DriveApp.getFileById(fileId).setTrashed(true); } catch (e) { /* ไม่มีไฟล์แล้ว */ }
+}
+
+function ensureColumn(sh, name) {
+  const head = headerOf(sh);
+  if (head.indexOf(name) < 0) {
+    const col = head.length + 1;
+    sh.getRange(1, col).setValue(name);
+    sh.getRange(1, col, sh.getMaxRows(), 1).setNumberFormat('@');
+    head.push(name);
+  }
+  return head;
 }
 
 /* ---------- config ---------- */
