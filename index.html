@@ -158,7 +158,7 @@ input.num{font-family:var(--f-num);text-align:right}
 .pinbg{position:fixed;inset:0;background:var(--bg);z-index:50;display:grid;place-items:center;padding:16px}
 .pinbox{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px 20px;width:100%;max-width:340px;display:grid;gap:12px;text-align:center}
 .pinbox h2{margin:0;font:700 20px var(--f-display)}
-.pinbox input{font:600 24px var(--f-num);text-align:center;letter-spacing:.3em;padding:12px}
+.pinbox input{font:600 20px var(--f-num);text-align:center;letter-spacing:.15em;padding:12px}
 .pinbox .btn{padding:12px;font-size:15px}
 .pinerr{margin:0;color:var(--bad);font-size:13px}
 /* product images */
@@ -290,8 +290,8 @@ input.num{font-family:var(--f-num);text-align:right}
 <div class="pinbg" id="pinbg" hidden>
   <form class="pinbox" id="pinform" novalidate>
     <h2>ตั้งราคา BLISSTECH</h2>
-    <p class="hint">ใส่ PIN เพื่อดูข้อมูลต้นทุน</p>
-    <input id="pin" type="password" inputmode="numeric" autocomplete="off" aria-label="PIN">
+    <p class="hint">ใส่รหัสเพื่อดูข้อมูลต้นทุน</p>
+    <input id="pin" type="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" aria-label="รหัส">
     <p class="pinerr" id="pinerr" hidden></p>
     <button class="btn pri" id="pinok" type="submit">เข้าใช้งาน</button>
   </form>

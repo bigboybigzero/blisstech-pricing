@@ -1,8 +1,8 @@
 # ตั้งราคา BLISSTECH
 
 เว็บแอปคำนวณราคาขายและกำไรต่อชิ้นบน Shopee · TikTok Shop · Facebook
-เปิดใช้ที่ URL ของ Apps Script Web app (ดู `const API_URL` ใน `index.html`) — Google เป็นคนเปิดหน้าเว็บ (ไฟล์ `Index` ในโปรเจกต์ Apps Script)
-repo นี้ตั้งเป็น **Private** — ไม่ได้ใช้ GitHub Pages แล้ว
+ใช้ผ่าน GitHub Pages: https://bigboybigzero.github.io/blisstech-pricing/
+(สำรอง: เปิด URL ของ Apps Script Web app ตรงๆ ก็ได้หน้าเว็บเดียวกัน — ไฟล์ `Index` ในโปรเจกต์ Apps Script)
 
 ## repo นี้มีอะไร / ไม่มีอะไร
 
